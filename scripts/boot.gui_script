@@ -1,0 +1,21 @@
+----------------------------------------------------------------------
+-- DEPENDENCIES
+----------------------------------------------------------------------
+
+local h_str = require "modules.h_str"
+local monarch = require "monarch.monarch"
+local dcolors = require "dcolors.dcolors"
+
+----------------------------------------------------------------------
+-- ENGINE FUNCTIONS
+----------------------------------------------------------------------
+
+function init(self)
+	local node_boot = gui.get_node(h_str.node_boot)
+	gui.set_color(node_boot, dcolors.palette.transparent_white)
+	gui.animate(node_boot, "color.w", 1, gui.EASING_LINEAR, 0.5, 0, function()
+		gui.animate(node_boot, "color.w", 0, gui.EASING_LINEAR, 0.5, 2, function()
+			monarch.replace(h_str.collection_game)
+		end)
+	end)
+end

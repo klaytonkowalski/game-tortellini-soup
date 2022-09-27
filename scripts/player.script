@@ -1,0 +1,19 @@
+local h_str = require "modules.h_str"
+local controller = require "modules.controller"
+
+function init(self)
+	msg.post(msg.url(), h_str.acquire_input_focus)
+	controller.init(self)
+end
+
+function final(self)
+	
+end
+
+function update(self, dt)
+	controller.update(self, dt)
+end
+
+function on_input(self, action_id, action)
+	controller.on_input(self, action_id, action)
+end

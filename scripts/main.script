@@ -1,0 +1,59 @@
+----------------------------------------------------------------------
+-- DEPENDENCIES
+----------------------------------------------------------------------
+
+local h_str = require "modules.h_str"
+local persist = require "modules.persist"
+local monarch = require "monarch.monarch"
+local dicebag = require "dicebag.dicebag"
+local dcolors = require "dcolors.dcolors"
+
+----------------------------------------------------------------------
+-- LOCAL FUNCTIONS
+----------------------------------------------------------------------
+
+local function init_randomness()
+	local seed = os.clock() * 100000000000
+	math.randomseed(seed)
+	dicebag.set_up_rng(seed)
+end
+
+local function init_defos()
+	defos.set_fullscreen(persist.get_fullscreen())
+end
+
+local function init_dcolors()
+	dcolors.add_palette("main")
+	dcolors.add_color("main", "white", vmath.vector4(1, 1, 1, 1))
+	dcolors.add_color("main", "black", vmath.vector4(0, 0, 0, 1))
+	dcolors.add_color("main", "transparent_white", vmath.vector4(1, 1, 1, 0))
+	dcolors.add_color("main", "transparent_black", vmath.vector4(0, 0, 0, 0))
+end
+
+----------------------------------------------------------------------
+-- ENGINE FUNCTIONS
+----------------------------------------------------------------------
+
+function init(self)
+	msg.post(msg.url(), h_str.message_init_monarch)
+	msg.post(msg.url(), h_str.acquire_input_focus)
+	init_randomness()
+	persist.init()
+	init_defos()
+	init_dcolors()
+end
+
+function on_input(self, action_id, action)
+	if action.pressed then
+		if action_id == h_str.key_f11 then
+			defos.toggle_fullscreen()
+			persist.set_fullscreen(defos.is_fullscreen())
+		end
+	end
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == h_str.message_init_monarch then
+		monarch.show(h_str.collection_game)
+	end
+end

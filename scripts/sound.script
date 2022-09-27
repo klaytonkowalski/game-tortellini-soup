@@ -1,0 +1,36 @@
+----------------------------------------------------------------------
+-- DEPENDENCIES
+----------------------------------------------------------------------
+
+local h_str = require "modules.h_str"
+
+----------------------------------------------------------------------
+-- PROPERTIES
+----------------------------------------------------------------------
+
+local gates =
+{
+	
+}
+
+local options =
+{
+
+}
+
+----------------------------------------------------------------------
+-- ENGINE FUNCTIONS
+----------------------------------------------------------------------
+
+function on_message(self, message_id, message, sender)
+	if message_id == h_str.message_play_sound then
+		if gates[message.id] and not gates[message.id].playing then
+			sound.play(msg.url(nil, go.get_id(), message.id))
+		end
+	elseif message_id == h_str.message_stop_sound then
+		sound.stop(msg.url(nil, go.get_id(), message.id))
+		if gates[message.id] then
+			gates[message.id].playing = false
+		end
+	end
+end
