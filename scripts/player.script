@@ -1,6 +1,7 @@
 local h_str = require "modules.h_str"
 local controller = require "modules.controller"
 
+
 function init(self)
 	msg.post(msg.url(), h_str.acquire_input_focus)
 	controller.init(self)

@@ -26,6 +26,8 @@ local function init_dcolors()
 	dcolors.add_palette("main")
 	dcolors.add_color("main", "white", vmath.vector4(1, 1, 1, 1))
 	dcolors.add_color("main", "black", vmath.vector4(0, 0, 0, 1))
+	dcolors.add_color("main", "green", vmath.vector4(0, 1, 0, 1))
+	dcolors.add_color("main", "red", vmath.vector4(1, 0, 0, 1))
 	dcolors.add_color("main", "transparent_white", vmath.vector4(1, 1, 1, 0))
 	dcolors.add_color("main", "transparent_black", vmath.vector4(0, 0, 0, 0))
 end
