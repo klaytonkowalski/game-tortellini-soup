@@ -5,7 +5,7 @@ local dcolors = require "dcolors.dcolors"
 local controller = {}
 
 local fall_speed = 300
-local max_fall_speed = 600
+local max_fall_speed = 150
 
 local jump_speed = 100
 local max_jump_count = 2
@@ -56,9 +56,7 @@ end
 
 local function fall(self, dt)
 	if not self.grounded then
-		if not self.spinning then
-			self.velocity.y = utility.clamp(self.velocity.y - fall_speed * dt, -max_fall_speed, max_fall_speed)
-		end
+		self.velocity.y = utility.clamp(self.velocity.y - fall_speed * dt, -max_fall_speed, max_fall_speed)
 	end
 end
 
@@ -83,7 +81,8 @@ local function dive(self)
 	if self.input.down ~= 0 then
 		if not self.diving then
 			if not self.grounded then
-				go.animate(msg.url(nil, go.get_id(), nil), "euler.z", go.PLAYBACK_ONCE_FORWARD, self.direction == 1 and -180 or 180, go.EASING_LINEAR, 0.125)
+				go.animate(msg.url(nil, go.get_id(), nil), "euler.z", go.PLAYBACK_ONCE_FORWARD, self.direction == 1 and -180 or 180, go.EASING_LINEAR, 0.25)
+				self.velocity.y = -max_fall_speed
 				self.input.down = 0
 				self.diving = true
 			end
@@ -114,8 +113,9 @@ local function collide(self)
 				self.grounded = true
 				self.spin_count = 0
 				if self.diving then
-					go.animate(msg.url(nil, go.get_id(), nil), "euler.z", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_LINEAR, 0.125)
-					self.diving = falsed
+					go.cancel_animations(msg.url(nil, go.get_id(), nil), "euler.z")
+					go.set(msg.url(nil, go.get_id(), nil), "euler.z", 0)
+					self.diving = false
 				end
 			elseif result.normal.y < 0 then
 				self.velocity.y = 0
