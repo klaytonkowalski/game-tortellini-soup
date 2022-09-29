@@ -16,8 +16,8 @@ components {
 embedded_components {
   id: "sprite"
   type: "sprite"
-  data: "tile_set: \"/atlases/character.atlas\"\n"
-  "default_animation: \"guy_idle_right\"\n"
+  data: "tile_set: \"/atlases/guy.atlas\"\n"
+  "default_animation: \"idle_right\"\n"
   "material: \"/builtins/materials/sprite.material\"\n"
   "blend_mode: BLEND_MODE_ALPHA\n"
   ""

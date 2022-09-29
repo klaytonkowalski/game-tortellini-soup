@@ -1,5 +1,5 @@
 animations {
-  id: "guy_idle_right"
+  id: "idle_right"
   images {
     image: "/assets/images/guy_0.png"
     sprite_trim_mode: SPRITE_TRIM_MODE_OFF
@@ -14,7 +14,7 @@ animations {
   flip_vertical: 0
 }
 animations {
-  id: "guy_idle_left"
+  id: "idle_left"
   images {
     image: "/assets/images/guy_0.png"
     sprite_trim_mode: SPRITE_TRIM_MODE_OFF
@@ -29,7 +29,7 @@ animations {
   flip_vertical: 0
 }
 animations {
-  id: "gui_walk_right"
+  id: "walk_right"
   images {
     image: "/assets/images/guy_2.png"
     sprite_trim_mode: SPRITE_TRIM_MODE_OFF
@@ -44,7 +44,7 @@ animations {
   flip_vertical: 0
 }
 animations {
-  id: "gui_walk_left"
+  id: "walk_left"
   images {
     image: "/assets/images/guy_2.png"
     sprite_trim_mode: SPRITE_TRIM_MODE_OFF
@@ -59,7 +59,7 @@ animations {
   flip_vertical: 0
 }
 animations {
-  id: "guy_fall_right"
+  id: "fall_right"
   images {
     image: "/assets/images/guy_4.png"
     sprite_trim_mode: SPRITE_TRIM_MODE_OFF
@@ -70,7 +70,7 @@ animations {
   flip_vertical: 0
 }
 animations {
-  id: "guy_fall_left"
+  id: "fall_left"
   images {
     image: "/assets/images/guy_4.png"
     sprite_trim_mode: SPRITE_TRIM_MODE_OFF

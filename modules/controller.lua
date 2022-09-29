@@ -15,9 +15,11 @@ local walk_ground_decay = 450
 local walk_air_decay = 150
 local max_walk_speed = 50
 
+local max_spin_count = 2
+
 local draw_ray_vectors = true
 
-local ray_length = vmath.vector3(3, 4, 0)
+local ray_length = vmath.vector3(2, 4, 0)
 local ray_vectors =
 {
 	vmath.vector3(-ray_length.x, -ray_length.y, 0),
@@ -29,6 +31,65 @@ local ray_masks =
 {
 	hash("collision_tilemap")
 }
+
+local function walk(self, dt)
+	local direction = self.input.left + self.input.right
+	if direction ~= 0 then
+		self.velocity.x = utility.clamp(self.velocity.x + walk_speed * direction * dt, -max_walk_speed, max_walk_speed)
+		self.direction = direction
+	elseif self.velocity.x > 0 then
+		self.velocity.x = utility.clamp(self.velocity.x - (self.grounded and walk_ground_decay or walk_air_decay) * dt, 0, max_walk_speed)
+	elseif self.velocity.x < 0 then
+		self.velocity.x = utility.clamp(self.velocity.x + (self.grounded and walk_ground_decay or walk_air_decay) * dt, -max_walk_speed, 0)
+	end
+end
+
+local function jump(self)
+	if self.input.up ~= 0 then
+		if self.jump_count < max_jump_count then
+			self.velocity.y = jump_speed
+			self.input.up = 0
+			self.jump_count = self.jump_count + 1
+		end
+	end
+end
+
+local function fall(self, dt)
+	if not self.grounded then
+		if not self.spinning then
+			self.velocity.y = utility.clamp(self.velocity.y - fall_speed * dt, -max_fall_speed, max_fall_speed)
+		end
+	end
+end
+
+local function spin(self)
+	if self.input.space ~= 0 then
+		if not self.spinning then
+			if self.grounded or self.spin_count < max_spin_count then
+				go.animate(msg.url(nil, go.get_id(), nil), "euler.y", go.PLAYBACK_ONCE_PINGPONG, 90, go.EASING_LINEAR, 0.25, 0, function()
+					go.set(msg.url(nil, go.get_id(), nil), "euler.y", 0)
+					self.input.space = 0
+					self.spinning = false
+				end)
+				self.velocity.y = 0
+				self.spin_count = self.spin_count + 1
+				self.spinning = true
+			end
+		end
+	end
+end
+
+local function dive(self)
+	if self.input.down ~= 0 then
+		if not self.diving then
+			if not self.grounded then
+				go.animate(msg.url(nil, go.get_id(), nil), "euler.z", go.PLAYBACK_ONCE_FORWARD, self.direction == 1 and -180 or 180, go.EASING_LINEAR, 0.125)
+				self.input.down = 0
+				self.diving = true
+			end
+		end
+	end
+end
 
 local function collide(self)
 	self.grounded = false
@@ -48,8 +109,14 @@ local function collide(self)
 			if result.normal.y > 0 then
 				self.velocity.y = 0
 				self.input.up = 0
+				self.input.down = 0
 				self.jump_count = 0
 				self.grounded = true
+				self.spin_count = 0
+				if self.diving then
+					go.animate(msg.url(nil, go.get_id(), nil), "euler.z", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_LINEAR, 0.125)
+					self.diving = falsed
+				end
 			elseif result.normal.y < 0 then
 				self.velocity.y = 0
 			end
@@ -57,34 +124,52 @@ local function collide(self)
 	end
 end
 
+local function animate(self)
+	local animation = self.animation
+	if self.direction == 1 then
+		if not self.grounded then
+			animation = h_str.animation_fall_right
+		elseif self.velocity.x ~= 0 then
+			animation = h_str.animation_walk_right
+		else
+			animation = h_str.animation_idle_right
+		end
+	elseif self.direction == -1 then
+		if not self.grounded then
+			animation = h_str.animation_fall_left
+		elseif self.velocity.x ~= 0 then
+			animation = h_str.animation_walk_left
+		else
+			animation = h_str.animation_idle_left
+		end
+	end
+	if self.animation ~= animation then
+		self.animation = animation
+		sprite.play_flipbook(msg.url(nil, nil, "sprite"), animation)
+	end
+end
+
 function controller.init(self)
-	self.input = { left = 0, right = 0, up = 0 }
+	self.input = { left = 0, right = 0, up = 0, down = 0, space = 0 }
 	self.velocity = vmath.vector3()
 	self.grounded = false
 	self.jump_count = 0
+	self.direction = 1
+	self.spin_count = 0
+	self.spinning = false
+	self.diving = false
+	self.animation = h_str.animation_idle_right
 end
 
 function controller.update(self, dt)
-	local direction = self.input.left + self.input.right
-	if direction ~= 0 then
-		self.velocity.x = utility.clamp(self.velocity.x + walk_speed * direction * dt, -max_walk_speed, max_walk_speed)
-	elseif self.velocity.x > 0 then
-		self.velocity.x = utility.clamp(self.velocity.x - (self.grounded and walk_ground_decay or walk_air_decay) * dt, 0, max_walk_speed)
-	elseif self.velocity.x < 0 then
-		self.velocity.x = utility.clamp(self.velocity.x + (self.grounded and walk_ground_decay or walk_air_decay) * dt, -max_walk_speed, 0)
-	end
-	if self.input.up ~= 0 then
-		if self.jump_count < max_jump_count then
-			self.velocity.y = jump_speed
-			self.input.up = 0
-			self.jump_count = self.jump_count + 1
-		end
-	end
-	if not self.grounded then
-		self.velocity.y = utility.clamp(self.velocity.y - fall_speed * dt, -max_fall_speed, max_fall_speed)
-	end
+	walk(self, dt)
+	jump(self)
+	fall(self, dt)
+	spin(self)
+	dive(self)
 	go.set_position(go.get_position() + self.velocity * dt)
 	collide(self)
+	animate(self)
 end
 
 function controller.on_input(self, action_id, action)
@@ -93,16 +178,24 @@ function controller.on_input(self, action_id, action)
 			self.input.up = 1
 		elseif action_id == h_str.key_a then
 			self.input.left = -1
+		elseif action_id == h_str.key_s then
+			self.input.down = -1
 		elseif action_id == h_str.key_d then
 			self.input.right = 1
+		elseif action_id == h_str.key_space then
+			self.input.space = 1
 		end
 	elseif action.released then
 		if action_id == h_str.key_w then
 			self.input.up = 0
 		elseif action_id == h_str.key_a then
 			self.input.left = 0
+		elseif action_id == h_str.key_s then
+			self.input.down = 0
 		elseif action_id == h_str.key_d then
 			self.input.right = 0
+		elseif action_id == h_str.key_space then
+			self.input.space = 0
 		end
 	end
 end

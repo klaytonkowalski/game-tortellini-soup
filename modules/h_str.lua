@@ -39,6 +39,7 @@ h_str.key_w = hash("key_w")
 h_str.key_a = hash("key_a")
 h_str.key_s = hash("key_s")
 h_str.key_d = hash("key_d")
+h_str.key_space = hash("key_space")
 
 ----------------------------------------------------------------------
 -- GUI NODES
@@ -57,6 +58,11 @@ h_str.collision_tilemap = hash("collision_tilemap")
 -- ANIMATION FRAMES
 ----------------------------------------------------------------------
 
-
+h_str.animation_idle_right = hash("idle_right")
+h_str.animation_idle_left = hash("idle_left")
+h_str.animation_walk_left = hash("walk_left")
+h_str.animation_walk_right = hash("walk_right")
+h_str.animation_fall_left = hash("fall_left")
+h_str.animation_fall_right = hash("fall_right")
 
 return h_str
