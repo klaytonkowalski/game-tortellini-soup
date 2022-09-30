@@ -6,7 +6,7 @@ layers {
   cell {
     x: 0
     y: 0
-    tile: 1
+    tile: 2
     h_flip: 0
     v_flip: 0
     rotate90: 0
@@ -326,7 +326,7 @@ layers {
   cell {
     x: 40
     y: 0
-    tile: 1
+    tile: 2
     h_flip: 0
     v_flip: 0
     rotate90: 0

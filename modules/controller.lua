@@ -56,7 +56,9 @@ end
 
 local function fall(self, dt)
 	if not self.grounded then
-		self.velocity.y = utility.clamp(self.velocity.y - fall_speed * dt, -max_fall_speed, max_fall_speed)
+		if not self.spinning then
+			self.velocity.y = utility.clamp(self.velocity.y - fall_speed * dt, -max_fall_speed, max_fall_speed)
+		end
 	end
 end
 

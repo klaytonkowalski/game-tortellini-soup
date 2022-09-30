@@ -63,7 +63,7 @@ instances {
   id: "camera_game"
   prototype: "/rendercam/camera.go"
   position {
-    x: 120.0
+    x: 82.0
     y: 62.0
     z: 0.0
   }
@@ -77,7 +77,7 @@ instances {
     id: "script"
     properties {
       id: "orthoScale"
-      value: "0.25"
+      value: "0.5"
       type: PROPERTY_TYPE_NUMBER
     }
     properties {
@@ -86,13 +86,18 @@ instances {
       type: PROPERTY_TYPE_BOOLEAN
     }
     properties {
+      id: "aspectRatio"
+      value: "4.0, 3.0, 0.0"
+      type: PROPERTY_TYPE_VECTOR3
+    }
+    properties {
       id: "useViewArea"
       value: "true"
       type: PROPERTY_TYPE_BOOLEAN
     }
     properties {
       id: "viewArea"
-      value: "960.0, 540.0, 0.0"
+      value: "320.0, 240.0, 0.0"
       type: PROPERTY_TYPE_VECTOR3
     }
   }
