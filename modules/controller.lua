@@ -1,23 +1,33 @@
+----------------------------------------------------------------------
+-- DEPENDENCIES
+----------------------------------------------------------------------
+
 local h_str = require "modules.h_str"
 local utility = require "modules.utility"
 local dcolors = require "dcolors.dcolors"
 
+----------------------------------------------------------------------
+-- PROPERTIES
+----------------------------------------------------------------------
+
 local controller = {}
 
 local fall_speed = 300
-local max_fall_speed = 150
+local max_fall_speed = 125
+
+local brittle_knockback = 0.5
 
 local jump_speed = 100
-local max_jump_count = 2
+local max_jump_count = 10
 
 local walk_speed = 300
 local walk_ground_decay = 450
 local walk_air_decay = 150
 local max_walk_speed = 50
 
-local max_spin_count = 2
+local max_spin_count = 1
 
-local draw_ray_vectors = true
+local draw_ray_vectors = false
 
 local ray_length = vmath.vector3(2, 4, 0)
 local ray_vectors =
@@ -29,8 +39,18 @@ local ray_vectors =
 }
 local ray_masks =
 {
-	hash("collision_tilemap")
+	hash("collision_solid"),
+	hash("collision_brittle")
 }
+local ray_mask_ids =
+{
+	solid = hash("collision_solid"),
+	brittle = hash("collision_brittle")
+}
+
+----------------------------------------------------------------------
+-- LOCAL FUNCTIONS
+----------------------------------------------------------------------
 
 local function walk(self, dt)
 	local direction = self.input.left + self.input.right
@@ -47,9 +67,11 @@ end
 local function jump(self)
 	if self.input.up ~= 0 then
 		if self.jump_count < max_jump_count then
-			self.velocity.y = jump_speed
-			self.input.up = 0
-			self.jump_count = self.jump_count + 1
+			if not self.spinning then
+				self.velocity.y = jump_speed
+				self.input.up = 0
+				self.jump_count = self.jump_count + 1
+			end
 		end
 	end
 end
@@ -83,13 +105,31 @@ local function dive(self)
 	if self.input.down ~= 0 then
 		if not self.diving then
 			if not self.grounded then
-				go.animate(msg.url(nil, go.get_id(), nil), "euler.z", go.PLAYBACK_ONCE_FORWARD, self.direction == 1 and -180 or 180, go.EASING_LINEAR, 0.25)
+				go.set(msg.url(nil, go.get_id(), nil), "euler.z", self.direction == 1 and -180 or 180)
 				self.velocity.y = -max_fall_speed
 				self.input.down = 0
 				self.diving = true
 			end
 		end
 	end
+end
+
+local function collide_solid(self)
+	self.velocity.y = 0
+	self.input.up = 0
+	self.input.down = 0
+	self.jump_count = 0
+	self.grounded = true
+	self.spin_count = 0
+	if self.diving then
+		self.diving = false
+		go.set(msg.url(nil, go.get_id(), nil), "euler.z", 0)
+	end
+end
+
+local function collide_brittle(self)
+	self.velocity.y = self.velocity.y * brittle_knockback
+	msg.post(msg.url(nil, "/game", "script"), h_str.message_break_brittle)
 end
 
 local function collide(self)
@@ -104,23 +144,23 @@ local function collide(self)
 			local penetration = vmath.vector3(result.normal.x * ray_length.x, result.normal.y * ray_length.y, 0) * (1 - result.fraction)
 			position = position + penetration
 			go.set_position(position)
-			if result.normal.x ~= 0 then
+			if math.abs(result.normal.x) == 1 then
 				self.velocity.x = 0
 			end
 			if result.normal.y > 0 then
-				self.velocity.y = 0
-				self.input.up = 0
-				self.input.down = 0
-				self.jump_count = 0
-				self.grounded = true
-				self.spin_count = 0
-				if self.diving then
-					go.cancel_animations(msg.url(nil, go.get_id(), nil), "euler.z")
-					go.set(msg.url(nil, go.get_id(), nil), "euler.z", 0)
-					self.diving = false
+				if result.group == ray_mask_ids.solid then
+					collide_solid(self)
+				elseif result.group == ray_mask_ids.brittle then
+					if self.diving then
+						collide_brittle(self)
+					else
+						collide_solid(self)
+					end
 				end
 			elseif result.normal.y < 0 then
-				self.velocity.y = 0
+				if self.velocity.y > 0 then
+					self.velocity.y = 0
+				end
 			end
 		end
 	end
@@ -151,6 +191,10 @@ local function animate(self)
 	end
 end
 
+----------------------------------------------------------------------
+-- MODULE FUNCTIONS
+----------------------------------------------------------------------
+
 function controller.init(self)
 	self.input = { left = 0, right = 0, up = 0, down = 0, space = 0 }
 	self.velocity = vmath.vector3()
@@ -163,7 +207,7 @@ function controller.init(self)
 	self.animation = h_str.animation_idle_right
 end
 
-function controller.update(self, dt)
+function controller.fixed_update(self, dt)
 	walk(self, dt)
 	jump(self)
 	fall(self, dt)

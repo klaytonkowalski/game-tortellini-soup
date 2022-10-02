@@ -17,7 +17,7 @@ title = Tortellini Soup
 publisher = Klayton Kowalski
 developer = Klayton Kowalski
 version = 1.0.0
-custom_resources = assets/events
+custom_resources = /assets/events
 dependencies#0 = https://github.com/britzl/monarch/archive/3.4.3.zip
 dependencies#1 = https://github.com/britzl/defold-input/archive/master.zip
 dependencies#2 = https://github.com/britzl/defold-richtext/archive/master.zip
@@ -32,4 +32,7 @@ dependencies#9 = https://github.com/rgrams/rendercam/archive/master.zip
 [graphics]
 default_texture_min_filter = nearest
 default_texture_mag_filter = nearest
+
+[physics]
+use_fixed_timestep = 1
 

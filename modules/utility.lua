@@ -44,6 +44,16 @@ function utility.previous_index(index, length)
 	return index
 end
 
+function utility.index_1D(x, y, width, height)
+	return x + (y - 1) * width
+end
+
+function utility.index_2D(index, width, height)
+	local x = (index - 1) % width
+	local y = (index - 1 - x) / width
+	return x + 1, y + 1
+end
+
 function utility.tile_position(pixel_position, offset, tile_width, tile_height)
 	return vmath.vector3(math.floor((pixel_position.x + offset.x) / tile_width + 1), math.floor((pixel_position.y + offset.y) / tile_height + 1), 0)
 end

@@ -20,28 +20,8 @@ instances {
   }
 }
 instances {
-  id: "guy"
-  prototype: "/objects/guy.go"
-  position {
-    x: 78.0
-    y: 57.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-  scale3 {
-    x: 1.0
-    y: 1.0
-    z: 1.0
-  }
-}
-instances {
-  id: "tilemap_test"
-  prototype: "/objects/tilemap_test.go"
+  id: "player"
+  prototype: "/objects/player.go"
   position {
     x: 0.0
     y: 0.0
@@ -63,8 +43,8 @@ instances {
   id: "camera_game"
   prototype: "/rendercam/camera.go"
   position {
-    x: 82.0
-    y: 62.0
+    x: 0.0
+    y: 0.0
     z: 0.0
   }
   rotation {
@@ -100,6 +80,26 @@ instances {
       value: "320.0, 240.0, 0.0"
       type: PROPERTY_TYPE_VECTOR3
     }
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "level_factory"
+  prototype: "/objects/level_factory.go"
+  position {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
   }
   scale3 {
     x: 1.0

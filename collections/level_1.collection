@@ -1,0 +1,102 @@
+name: "collection_level_0"
+instances {
+  id: "tilemap"
+  prototype: "/objects/level_1_tilemap.go"
+  position {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "load_down"
+  prototype: "/objects/load_down.go"
+  position {
+    x: 80.0
+    y: -4.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 40.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "load_left"
+  prototype: "/objects/load_left.go"
+  position {
+    x: -4.0
+    y: 60.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "load_right"
+  prototype: "/objects/load_right.go"
+  position {
+    x: 164.0
+    y: 60.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "load_up"
+  prototype: "/objects/load_up.go"
+  position {
+    x: 80.0
+    y: 124.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+scale_along_z: 0
