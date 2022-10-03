@@ -10,14 +10,8 @@ local current_y
 
 local level_objects
 
-local function get_level_position()
-	return vmath.vector3((current_x - 1) * 160, ((world.height - 1) * 120) - (current_y - 1) * 120, 0)
-end
-
 local function break_brittle()
-	local tile_position_offset = -get_level_position()
-	local tile_position = utility.tile_position(go.get_position(hash("/player")) - vmath.vector3(0, 8, 0), tile_position_offset, 8, 8)
-	tilemap.set_tile(msg.url(nil, level_objects[hash("/tilemap")], "tilemap"), hash("layer_1"), tile_position.x, tile_position.y, 0)
+	
 end
 
 local function unload_level()
@@ -31,35 +25,32 @@ local function load_level_absolute(world_x, world_y)
 	current_y = world_y
 	local level_id = world.layout[utility.index_1D(current_x, current_y, world.width, world.height)]
 	level = persist.get_level(level_id)
-	local level_position = get_level_position()
-	level_objects = collectionfactory.create(msg.url(nil, hash("/level_factory"), "collectionfactory_level_" .. level_id), level_position)
-	local camera_position = level_position + vmath.vector3(80, 60, 0)
-	go.set_position(camera_position, hash("/camera_game"))
-	local player_position = level_position + vmath.vector3((level.start_x - 1) * 8 + 4, (level.start_y - 1) * 8 + 4, 0)
-	go.set_position(player_position, hash("/player"))
+	level_objects = collectionfactory.create(msg.url(nil, hash("/level_factory"), "collectionfactory_level_" .. level_id))
+	go.set_position(vmath.vector3((level.start_x - 1) * 8 + 4, (level.start_y - 1) * 8 + 4, 0), hash("/player"))
 end
 
 local function load_level_relative(direction)
 	local player_position = go.get_position(hash("/player"))
 	if direction == 1 then
 		current_y = current_y - 1
-		go.set_position(player_position + vmath.vector3(0, 8, 0), hash("/player"))
+		player_position.y = 4
+		go.set_position(player_position, hash("/player"))
 	elseif direction == 2 then
 		current_x = current_x - 1
-		go.set_position(player_position - vmath.vector3(8, 0, 0), hash("/player"))
+		player_position.x = 156
+		go.set_position(player_position, hash("/player"))
 	elseif direction == 3 then
 		current_y = current_y + 1
-		go.set_position(player_position - vmath.vector3(0, 8, 0), hash("/player"))
+		player_position.y = 116
+		go.set_position(player_position, hash("/player"))
 	elseif direction == 4 then
 		current_x = current_x + 1
-		go.set_position(player_position + vmath.vector3(8, 0, 0), hash("/player"))
+		player_position.x = 4
+		go.set_position(player_position, hash("/player"))
 	end
 	local level_id = world.layout[utility.index_1D(current_x, current_y, world.width, world.height)]
 	level = persist.get_level(level_id)
-	local level_position = get_level_position()
-	level_objects = collectionfactory.create(msg.url(nil, hash("/level_factory"), "collectionfactory_level_" .. level_id), level_position)
-	local camera_position = level_position + vmath.vector3(80, 60, 0)
-	go.set_position(camera_position, hash("/camera_game"))
+	level_objects = collectionfactory.create(msg.url(nil, hash("/level_factory"), "collectionfactory_level_" .. level_id))
 end
 
 local function load_world()

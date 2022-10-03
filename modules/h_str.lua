@@ -46,6 +46,14 @@ h_str.key_s = hash("key_s")
 h_str.key_d = hash("key_d")
 h_str.key_space = hash("key_space")
 
+h_str.gamepad_start = hash("gamepad_start")
+h_str.gamepad_back = hash("gamepad_back")
+h_str.gamepad_lstick_up = hash("gamepad_lstick_up")
+h_str.gamepad_lstick_left = hash("gamepad_lstick_left")
+h_str.gamepad_lstick_down = hash("gamepad_lstick_down")
+h_str.gamepad_lstick_right = hash("gamepad_lstick_right")
+h_str.gamepad_rpad_down = hash("gamepad_rpad_down")
+
 ----------------------------------------------------------------------
 -- GUI NODES
 ----------------------------------------------------------------------

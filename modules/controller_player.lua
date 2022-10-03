@@ -15,22 +15,18 @@ local controller = {}
 local fall_speed = 300
 local max_fall_speed = 125
 
-local brittle_knockback = 0.5
-
 local jump_speed = 100
-local max_jump_count = 10
 
 local walk_speed = 300
 local walk_ground_decay = 450
 local walk_air_decay = 150
 local max_walk_speed = 50
 
-local max_spin_count = 1
+local draw_rays = true
 
-local draw_ray_vectors = false
-
-local ray_length = vmath.vector3(2, 4, 0)
-local ray_vectors =
+local ray_origin_offset = vmath.vector3(0, -0.5, 0)
+local ray_length = vmath.vector3(2, 3.5, 0)
+local ray_destinations =
 {
 	vmath.vector3(-ray_length.x, -ray_length.y, 0),
 	vmath.vector3(ray_length.x, -ray_length.y, 0),
@@ -52,6 +48,11 @@ local ray_mask_ids =
 -- LOCAL FUNCTIONS
 ----------------------------------------------------------------------
 
+local function reset_euler_z()
+	go.cancel_animations(go.get_id(), "euler.z")
+	go.set(go.get_id(), "euler.z", 0)
+end
+
 local function walk(self, dt)
 	local direction = self.input.left + self.input.right
 	if direction ~= 0 then
@@ -66,8 +67,23 @@ end
 
 local function jump(self)
 	if self.input.up ~= 0 then
-		if self.jump_count < max_jump_count then
+		if self.jump_count < self.max_jump_count then
+			-- If the player is spinning, then do not jump.
+			-- Spinning forces zero gravity for x seconds, which would cause an abnormally high jump.
 			if not self.spinning then
+				reset_euler_z()
+				-- If the player is already jumping, then this is a multi-jump.
+				if self.jump_count > 0 then
+					-- Do a barrel roll.
+					go.animate(go.get_id(), "euler.z", go.PLAYBACK_ONCE_FORWARD, self.direction == 1 and -360 or 360, go.EASING_LINEAR, 1, 0, function()
+						go.set(go.get_id(), "euler.z", 0)
+					end)
+				end
+				-- If the player is diving, then cancel the dive.
+				if self.diving then
+					self.diving = false
+					self.input.down = 0
+				end
 				self.velocity.y = jump_speed
 				self.input.up = 0
 				self.jump_count = self.jump_count + 1
@@ -78,6 +94,7 @@ end
 
 local function fall(self, dt)
 	if not self.grounded then
+		-- If the player is spinning, then force zero gravity until the spin completes.
 		if not self.spinning then
 			self.velocity.y = utility.clamp(self.velocity.y - fall_speed * dt, -max_fall_speed, max_fall_speed)
 		end
@@ -87,9 +104,9 @@ end
 local function spin(self)
 	if self.input.space ~= 0 then
 		if not self.spinning then
-			if self.grounded or self.spin_count < max_spin_count then
-				go.animate(msg.url(nil, go.get_id(), nil), "euler.y", go.PLAYBACK_ONCE_PINGPONG, 90, go.EASING_LINEAR, 0.25, 0, function()
-					go.set(msg.url(nil, go.get_id(), nil), "euler.y", 0)
+			if self.spin_count < self.max_spin_count then
+				go.animate(go.get_id(), "euler.y", go.PLAYBACK_ONCE_PINGPONG, 90, go.EASING_LINEAR, 0.25, 0, function()
+					go.set(go.get_id(), "euler.y", 0)
 					self.input.space = 0
 					self.spinning = false
 				end)
@@ -105,7 +122,8 @@ local function dive(self)
 	if self.input.down ~= 0 then
 		if not self.diving then
 			if not self.grounded then
-				go.set(msg.url(nil, go.get_id(), nil), "euler.z", self.direction == 1 and -180 or 180)
+				reset_euler_z()
+				go.set(go.get_id(), "euler.z", self.direction == 1 and -180 or 180)
 				self.velocity.y = -max_fall_speed
 				self.input.down = 0
 				self.diving = true
@@ -114,31 +132,27 @@ local function dive(self)
 	end
 end
 
-local function collide_solid(self)
+local function collide_ground(self)
 	self.velocity.y = 0
 	self.input.up = 0
 	self.input.down = 0
 	self.jump_count = 0
+	self.max_jump_count = 2
 	self.grounded = true
 	self.spin_count = 0
-	if self.diving then
-		self.diving = false
-		go.set(msg.url(nil, go.get_id(), nil), "euler.z", 0)
-	end
-end
-
-local function collide_brittle(self)
-	self.velocity.y = self.velocity.y * brittle_knockback
-	msg.post(msg.url(nil, "/game", "script"), h_str.message_break_brittle)
+	self.max_spin_count = 1
+	self.diving = false
+	reset_euler_z()
 end
 
 local function collide(self)
 	self.grounded = false
 	local position = go.get_position()
-	for index, ray_vector in ipairs(ray_vectors) do
-		local result = physics.raycast(position, position + ray_vector, ray_masks)
-		if draw_ray_vectors then
-			msg.post(msg.url("@render", nil, nil), h_str.draw_line, { start_point = position, end_point = position + ray_vector, color = result and dcolors.palette["green"] or dcolors.palette["red"] })
+	for index, ray_destination in ipairs(ray_destinations) do
+		local ray_origin = position + ray_origin_offset
+		local result = physics.raycast(ray_origin, ray_origin + ray_destination, ray_masks)
+		if draw_rays then
+			msg.post(msg.url("@render", nil, nil), h_str.draw_line, { start_point = ray_origin, end_point = ray_origin + ray_destination, color = result and dcolors.palette["green"] or dcolors.palette["red"] })
 		end
 		if result then
 			local penetration = vmath.vector3(result.normal.x * ray_length.x, result.normal.y * ray_length.y, 0) * (1 - result.fraction)
@@ -148,15 +162,7 @@ local function collide(self)
 				self.velocity.x = 0
 			end
 			if result.normal.y > 0 then
-				if result.group == ray_mask_ids.solid then
-					collide_solid(self)
-				elseif result.group == ray_mask_ids.brittle then
-					if self.diving then
-						collide_brittle(self)
-					else
-						collide_solid(self)
-					end
-				end
+				collide_ground(self)
 			elseif result.normal.y < 0 then
 				if self.velocity.y > 0 then
 					self.velocity.y = 0
@@ -220,27 +226,27 @@ end
 
 function controller.on_input(self, action_id, action)
 	if action.pressed then
-		if action_id == h_str.key_w then
+		if action_id == h_str.key_w or action_id == h_str.gamepad_lstick_up then
 			self.input.up = 1
-		elseif action_id == h_str.key_a then
+		elseif action_id == h_str.key_a or action_id == h_str.gamepad_lstick_left then
 			self.input.left = -1
-		elseif action_id == h_str.key_s then
+		elseif action_id == h_str.key_s or action_id == h_str.gamepad_lstick_down then
 			self.input.down = -1
-		elseif action_id == h_str.key_d then
+		elseif action_id == h_str.key_d or action_id == h_str.gamepad_lstick_right then
 			self.input.right = 1
-		elseif action_id == h_str.key_space then
+		elseif action_id == h_str.key_space or action_id == h_str.gamepad_rpad_down then
 			self.input.space = 1
 		end
 	elseif action.released then
-		if action_id == h_str.key_w then
+		if action_id == h_str.key_w or action_id == h_str.gamepad_lstick_up then
 			self.input.up = 0
-		elseif action_id == h_str.key_a then
+		elseif action_id == h_str.key_a or action_id == h_str.gamepad_lstick_left then
 			self.input.left = 0
-		elseif action_id == h_str.key_s then
+		elseif action_id == h_str.key_s or action_id == h_str.gamepad_lstick_down then
 			self.input.down = 0
-		elseif action_id == h_str.key_d then
+		elseif action_id == h_str.key_d or action_id == h_str.gamepad_lstick_right then
 			self.input.right = 0
-		elseif action_id == h_str.key_space then
+		elseif action_id == h_str.key_space or action_id == h_str.gamepad_rpad_down then
 			self.input.space = 0
 		end
 	end

@@ -6,8 +6,8 @@ render = /rendercam/rendercam.renderc
 shared_state = 1
 
 [display]
-width = 320
-height = 240
+width = 160
+height = 90
 
 [android]
 input_method = HiddenInputField
@@ -20,14 +20,13 @@ version = 1.0.0
 custom_resources = /assets/events
 dependencies#0 = https://github.com/britzl/monarch/archive/3.4.3.zip
 dependencies#1 = https://github.com/britzl/defold-input/archive/master.zip
-dependencies#2 = https://github.com/britzl/defold-richtext/archive/master.zip
-dependencies#3 = https://github.com/subsoap/defos/archive/v2.6.0.zip
-dependencies#4 = https://github.com/subsoap/defsave/archive/v1.2.3.zip
-dependencies#5 = https://github.com/klaytonkowalski/library-defold-colors/archive/master.zip
-dependencies#6 = https://github.com/klaytonkowalski/library-defold-timer/archive/main.zip
-dependencies#7 = https://github.com/klaytonkowalski/library-defold-gui/archive/main.zip
-dependencies#8 = https://github.com/8bitskull/dicebag/archive/master.zip
-dependencies#9 = https://github.com/rgrams/rendercam/archive/master.zip
+dependencies#2 = https://github.com/subsoap/defos/archive/v2.6.0.zip
+dependencies#3 = https://github.com/subsoap/defsave/archive/v1.2.3.zip
+dependencies#4 = https://github.com/klaytonkowalski/library-defold-colors/archive/master.zip
+dependencies#5 = https://github.com/klaytonkowalski/library-defold-timer/archive/main.zip
+dependencies#6 = https://github.com/klaytonkowalski/library-defold-gui/archive/main.zip
+dependencies#7 = https://github.com/8bitskull/dicebag/archive/master.zip
+dependencies#8 = https://github.com/rgrams/rendercam/archive/master.zip
 
 [graphics]
 default_texture_min_filter = nearest

@@ -24,7 +24,7 @@ instances {
   prototype: "/objects/load_down.go"
   position {
     x: 80.0
-    y: -4.0
+    y: -6.0
     z: 0.0
   }
   rotation {
@@ -43,7 +43,7 @@ instances {
   id: "load_left"
   prototype: "/objects/load_left.go"
   position {
-    x: -4.0
+    x: -6.0
     y: 60.0
     z: 0.0
   }
@@ -63,7 +63,7 @@ instances {
   id: "load_right"
   prototype: "/objects/load_right.go"
   position {
-    x: 164.0
+    x: 166.0
     y: 60.0
     z: 0.0
   }
@@ -84,7 +84,7 @@ instances {
   prototype: "/objects/load_up.go"
   position {
     x: 80.0
-    y: 124.0
+    y: 126.0
     z: 0.0
   }
   rotation {

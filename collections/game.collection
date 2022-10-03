@@ -43,8 +43,8 @@ instances {
   id: "camera_game"
   prototype: "/rendercam/camera.go"
   position {
-    x: 0.0
-    y: 0.0
+    x: 80.0
+    y: 60.0
     z: 0.0
   }
   rotation {
@@ -55,11 +55,6 @@ instances {
   }
   component_properties {
     id: "script"
-    properties {
-      id: "orthoScale"
-      value: "0.5"
-      type: PROPERTY_TYPE_NUMBER
-    }
     properties {
       id: "fixedAspectRatio"
       value: "true"
@@ -77,7 +72,7 @@ instances {
     }
     properties {
       id: "viewArea"
-      value: "320.0, 240.0, 0.0"
+      value: "160.0, 120.0, 0.0"
       type: PROPERTY_TYPE_VECTOR3
     }
   }
