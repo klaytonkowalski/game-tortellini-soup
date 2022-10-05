@@ -22,7 +22,7 @@ local walk_ground_decay = 450
 local walk_air_decay = 150
 local max_walk_speed = 50
 
-local draw_rays = true
+local draw_rays = false
 
 local ray_origin_offset = vmath.vector3(0, -0.5, 0)
 local ray_length = vmath.vector3(2, 3.5, 0)
@@ -68,9 +68,9 @@ end
 local function jump(self)
 	if self.input.up ~= 0 then
 		if self.jump_count < self.max_jump_count then
-			-- If the player is spinning, then do not jump.
-			-- Spinning forces zero gravity for x seconds, which would cause an abnormally high jump.
-			if not self.spinning then
+			-- If the player is dodging, then do not jump.
+			-- Dodging forces zero gravity for x seconds, which would cause an abnormally high jump.
+			if not self.dodging then
 				reset_euler_z()
 				-- If the player is already jumping, then this is a multi-jump.
 				if self.jump_count > 0 then
@@ -94,25 +94,26 @@ end
 
 local function fall(self, dt)
 	if not self.grounded then
-		-- If the player is spinning, then force zero gravity until the spin completes.
-		if not self.spinning then
+		-- If the player is dodging, then force zero gravity until the dodge completes.
+		if not self.dodging then
 			self.velocity.y = utility.clamp(self.velocity.y - fall_speed * dt, -max_fall_speed, max_fall_speed)
 		end
 	end
 end
 
-local function spin(self)
+local function dodge(self)
 	if self.input.space ~= 0 then
-		if not self.spinning then
-			if self.spin_count < self.max_spin_count then
-				go.animate(go.get_id(), "euler.y", go.PLAYBACK_ONCE_PINGPONG, 90, go.EASING_LINEAR, 0.25, 0, function()
-					go.set(go.get_id(), "euler.y", 0)
-					self.input.space = 0
-					self.spinning = false
-				end)
+		if not self.dodging then
+			if self.dodge_count < self.max_dodge_count then
 				self.velocity.y = 0
-				self.spin_count = self.spin_count + 1
-				self.spinning = true
+				self.dodge_count = self.dodge_count + 1
+				self.dodging = true
+				go.set(msg.url(nil, nil, "sprite"), "tint.w", 0.5)
+				timer.delay(0.25, false, function()
+					go.set(msg.url(nil, nil, "sprite"), "tint.w", 1)
+					self.input.space = 0
+					self.dodging = false
+				end)
 			end
 		end
 	end
@@ -139,8 +140,8 @@ local function collide_ground(self)
 	self.jump_count = 0
 	self.max_jump_count = 2
 	self.grounded = true
-	self.spin_count = 0
-	self.max_spin_count = 1
+	self.dodge_count = 0
+	self.max_dodge_count = 1
 	self.diving = false
 	reset_euler_z()
 end
@@ -207,8 +208,8 @@ function controller.init(self)
 	self.grounded = false
 	self.jump_count = 0
 	self.direction = 1
-	self.spin_count = 0
-	self.spinning = false
+	self.dodge_count = 0
+	self.dodging = false
 	self.diving = false
 	self.animation = h_str.animation_idle_right
 end
@@ -217,7 +218,7 @@ function controller.fixed_update(self, dt)
 	walk(self, dt)
 	jump(self)
 	fall(self, dt)
-	spin(self)
+	dodge(self)
 	dive(self)
 	go.set_position(go.get_position() + self.velocity * dt)
 	collide(self)

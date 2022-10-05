@@ -43,7 +43,19 @@ local default_data =
 	{
 		{
 			start_x = 7,
-			start_y = 3
+			start_y = 3,
+			layer_1 =
+			{
+				
+			},
+			layer_2 =
+			{
+				
+			},
+			layer_3 =
+			{
+				
+			}
 		}
 	}
 }

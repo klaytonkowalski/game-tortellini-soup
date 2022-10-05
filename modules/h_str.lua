@@ -32,7 +32,7 @@ h_str.message_break_brittle = hash("message_break_brittle")
 h_str.collection_main = hash("collection_main")
 h_str.collection_boot = hash("collection_boot")
 h_str.collection_game = hash("collection_game")
-h_str.collection_level_0 = hash("collection_level_0")
+h_str.collection_editor = hash("collection_editor")
 
 ----------------------------------------------------------------------
 -- INPUT ACTIONS
