@@ -1,0 +1,3 @@
+local h_str = require "modules.h_str"
+
+go.property("hostile", true)

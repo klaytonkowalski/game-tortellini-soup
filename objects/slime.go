@@ -1,6 +1,6 @@
 components {
   id: "script"
-  component: "/scripts/player.script"
+  component: "/scripts/slime.script"
   position {
     x: 0.0
     y: 0.0
@@ -16,15 +16,15 @@ components {
 embedded_components {
   id: "sprite"
   type: "sprite"
-  data: "tile_set: \"/atlases/guy.atlas\"\n"
-  "default_animation: \"idle_right\"\n"
+  data: "tile_set: \"/atlases/slime.atlas\"\n"
+  "default_animation: \"walk_right\"\n"
   "material: \"/builtins/materials/sprite.material\"\n"
   "blend_mode: BLEND_MODE_ALPHA\n"
   ""
   position {
     x: 0.0
     y: 0.0
-    z: 0.5
+    z: 0.4
   }
   rotation {
     x: 0.0
@@ -44,7 +44,7 @@ embedded_components {
   "group: \"collision_character\"\n"
   "mask: \"collision_solid\"\n"
   "mask: \"collision_brittle\"\n"
-  "mask: \"collision_load\"\n"
+  "mask: \"collision_character\"\n"
   "embedded_collision_shape {\n"
   "  shapes {\n"
   "    shape_type: TYPE_BOX\n"

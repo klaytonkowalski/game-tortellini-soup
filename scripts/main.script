@@ -56,6 +56,6 @@ end
 
 function on_message(self, message_id, message, sender)
 	if message_id == h_str.message_init_monarch then
-		monarch.show(h_str.collection_editor)
+		monarch.show(h_str.collection_game)
 	end
 end

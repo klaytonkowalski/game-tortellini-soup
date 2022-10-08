@@ -14,16 +14,16 @@ local controller = {}
 
 local fall_speed = 300
 local max_fall_speed = 125
-
 local jump_speed = 100
-
+local max_jump_count = 2
 local walk_speed = 300
 local walk_ground_decay = 450
 local walk_air_decay = 150
 local max_walk_speed = 50
+local max_dodge_count = 1
+local bounce_speed = 75
 
 local draw_rays = false
-
 local ray_origin_offset = vmath.vector3(0, -0.5, 0)
 local ray_length = vmath.vector3(2, 3.5, 0)
 local ray_destinations =
@@ -36,12 +36,8 @@ local ray_destinations =
 local ray_masks =
 {
 	hash("collision_solid"),
-	hash("collision_brittle")
-}
-local ray_mask_ids =
-{
-	solid = hash("collision_solid"),
-	brittle = hash("collision_brittle")
+	hash("collision_brittle"),
+	hash("collision_character")
 }
 
 ----------------------------------------------------------------------
@@ -51,6 +47,12 @@ local ray_mask_ids =
 local function reset_euler_z()
 	go.cancel_animations(go.get_id(), "euler.z")
 	go.set(go.get_id(), "euler.z", 0)
+end
+
+local function barrel_roll(direction)
+	go.animate(go.get_id(), "euler.z", go.PLAYBACK_ONCE_FORWARD, direction == 1 and -360 or 360, go.EASING_LINEAR, 1, 0, function()
+		go.set(go.get_id(), "euler.z", 0)
+	end)
 end
 
 local function walk(self, dt)
@@ -67,17 +69,14 @@ end
 
 local function jump(self)
 	if self.input.up ~= 0 then
-		if self.jump_count < self.max_jump_count then
+		if self.jump_count < max_jump_count then
 			-- If the player is dodging, then do not jump.
 			-- Dodging forces zero gravity for x seconds, which would cause an abnormally high jump.
 			if not self.dodging then
 				reset_euler_z()
 				-- If the player is already jumping, then this is a multi-jump.
 				if self.jump_count > 0 then
-					-- Do a barrel roll.
-					go.animate(go.get_id(), "euler.z", go.PLAYBACK_ONCE_FORWARD, self.direction == 1 and -360 or 360, go.EASING_LINEAR, 1, 0, function()
-						go.set(go.get_id(), "euler.z", 0)
-					end)
+					barrel_roll(self.direction)
 				end
 				-- If the player is diving, then cancel the dive.
 				if self.diving then
@@ -104,7 +103,7 @@ end
 local function dodge(self)
 	if self.input.space ~= 0 then
 		if not self.dodging then
-			if self.dodge_count < self.max_dodge_count then
+			if self.dodge_count < max_dodge_count then
 				self.velocity.y = 0
 				self.dodge_count = self.dodge_count + 1
 				self.dodging = true
@@ -138,12 +137,18 @@ local function collide_ground(self)
 	self.input.up = 0
 	self.input.down = 0
 	self.jump_count = 0
-	self.max_jump_count = 2
 	self.grounded = true
 	self.dodge_count = 0
-	self.max_dodge_count = 1
 	self.diving = false
 	reset_euler_z()
+end
+
+local function collide_character(self)
+	self.velocity.y = bounce_speed
+	self.input.down = 0
+	self.diving = false
+	reset_euler_z()
+	barrel_roll(self.direction)
 end
 
 local function collide(self)
@@ -163,7 +168,11 @@ local function collide(self)
 				self.velocity.x = 0
 			end
 			if result.normal.y > 0 then
-				collide_ground(self)
+				if result.group == h_str.collision_character then
+					collide_character(self)
+				else
+					collide_ground(self)
+				end
 			elseif result.normal.y < 0 then
 				if self.velocity.y > 0 then
 					self.velocity.y = 0
