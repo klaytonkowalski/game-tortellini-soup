@@ -12,6 +12,8 @@ h_str.acquire_input_focus = hash("acquire_input_focus")
 h_str.release_input_focus = hash("release_input_focus")
 h_str.draw_line = hash("draw_line")
 h_str.trigger_response = hash("trigger_response")
+h_str.enable = hash("enable")
+h_str.disable = hash("disable")
 
 ----------------------------------------------------------------------
 -- CUSTOM MESSAGES
@@ -68,6 +70,7 @@ h_str.collision_character = hash("collision_character")
 h_str.collision_solid = hash("collision_solid")
 h_str.collision_brittle = hash("collision_brittle")
 h_str.collision_load = hash("collision_load")
+h_str.collision_event = hash("collision_event")
 
 ----------------------------------------------------------------------
 -- ANIMATION FRAMES

@@ -45,6 +45,7 @@ embedded_components {
   "mask: \"collision_solid\"\n"
   "mask: \"collision_brittle\"\n"
   "mask: \"collision_load\"\n"
+  "mask: \"collision_event\"\n"
   "embedded_collision_shape {\n"
   "  shapes {\n"
   "    shape_type: TYPE_BOX\n"

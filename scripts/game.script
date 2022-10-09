@@ -25,7 +25,7 @@ local function load_level_absolute(world_x, world_y)
 	current_y = world_y
 	local level_id = world.layout[utility.index_1D(current_x, current_y, world.width, world.height)]
 	level = persist.get_level(level_id)
-	level_objects = collectionfactory.create(msg.url(nil, hash("/level_factory"), "collectionfactory_level_" .. level_id))
+	level_objects = collectionfactory.create(msg.url(nil, hash("/factory_level"), "collectionfactory_level_" .. level_id))
 	go.set_position(vmath.vector3((level.start_x - 1) * 8 + 4, (level.start_y - 1) * 8 + 4, 0), hash("/player"))
 end
 
@@ -50,7 +50,7 @@ local function load_level_relative(direction)
 	end
 	local level_id = world.layout[utility.index_1D(current_x, current_y, world.width, world.height)]
 	level = persist.get_level(level_id)
-	level_objects = collectionfactory.create(msg.url(nil, hash("/level_factory"), "collectionfactory_level_" .. level_id))
+	level_objects = collectionfactory.create(msg.url(nil, hash("/factory_level"), "collectionfactory_level_" .. level_id))
 end
 
 local function load_world()

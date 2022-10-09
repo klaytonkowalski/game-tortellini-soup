@@ -1,9 +1,9 @@
-image: "/assets/images/tilesource_01_1.png"
+image: "/assets/images/tilesource_1.png"
 tile_width: 8
 tile_height: 8
 tile_margin: 0
 tile_spacing: 0
-collision: "/assets/images/tilesource_01_1.png"
+collision: "/assets/images/tilesource_1.png"
 material_tag: "tile"
 convex_hulls {
   index: 0
