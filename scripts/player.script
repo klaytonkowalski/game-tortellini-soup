@@ -1,4 +1,5 @@
 local h_str = require "modules.h_str"
+local utility = require "modules.utility"
 local controller = require "modules.controller_player"
 
 function init(self)
@@ -16,6 +17,13 @@ end
 
 function on_input(self, action_id, action)
 	controller.on_input(self, action_id, action)
+	if action.pressed then
+		if action_id == h_str.key_enter then
+			if self.event_id then
+				utility.start_event(self.event_id)
+			end
+		end
+	end
 end
 
 function on_message(self, message_id, message, sender)
@@ -24,6 +32,8 @@ function on_message(self, message_id, message, sender)
 			if message.enter then
 				msg.post(msg.url(nil, hash("/game"), "script"), h_str.message_load_level_relative, { direction = go.get(msg.url(nil, message.other_id, "script"), "direction") })
 			end
+		elseif message.group == h_str.collision_event then
+			self.event_id = message.enter and go.get(msg.url(nil, message.other_id, "script"), "event_id") or nil
 		end
 	end
 end

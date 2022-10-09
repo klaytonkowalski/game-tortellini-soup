@@ -46,7 +46,8 @@ h_str.key_w = hash("key_w")
 h_str.key_a = hash("key_a")
 h_str.key_s = hash("key_s")
 h_str.key_d = hash("key_d")
-h_str.key_space = hash("key_space")
+h_str.key_lshift = hash("key_lshift")
+h_str.key_enter = hash("key_enter")
 
 h_str.gamepad_start = hash("gamepad_start")
 h_str.gamepad_back = hash("gamepad_back")
@@ -60,7 +61,7 @@ h_str.gamepad_rpad_down = hash("gamepad_rpad_down")
 -- GUI NODES
 ----------------------------------------------------------------------
 
-h_str.node_boot = hash("node_boot")
+h_str.node_root = hash("node_root")
 
 ----------------------------------------------------------------------
 -- COLLISION GROUPS

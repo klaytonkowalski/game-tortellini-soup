@@ -1,20 +1,17 @@
 local h_str = require "modules.h_str"
 local controller = require "modules.controller_slime"
+local event = require "modules.event"
 
 go.property("hostile", true)
-go.property("event", false)
+go.property("event_id", 0)
 
 function init(self)
 	controller.init(self)
-	if not self.event then
-		msg.post(msg.url(nil, nil, "collisionobject_event"), h_str.disable)
-	end
+	event.init(self)
 end
 
 function final(self)
-	if self.ellipsis then
-		go.delete(self.ellipsis)
-	end
+	event.final(self)
 end
 
 function fixed_update(self, dt)
@@ -22,12 +19,5 @@ function fixed_update(self, dt)
 end
 
 function on_message(self, message_id, message, sender)
-	if message_id == h_str.trigger_response then
-		if message.enter then
-			self.ellipsis = factory.create(msg.url(nil, hash("/factory_stuff"), "factory_ellipsis"), go.get_position() + vmath.vector3(0, 8, 0))
-		else
-			go.delete(self.ellipsis)
-			self.ellipsis = nil
-		end
-	end
+	event.on_message(self, message_id, message)
 end

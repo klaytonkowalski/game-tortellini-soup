@@ -101,7 +101,7 @@ local function fall(self, dt)
 end
 
 local function dodge(self)
-	if self.input.space ~= 0 then
+	if self.input.lshift ~= 0 then
 		if not self.dodging then
 			if self.dodge_count < max_dodge_count then
 				self.velocity.y = 0
@@ -110,7 +110,7 @@ local function dodge(self)
 				go.set(msg.url(nil, nil, "sprite"), "tint.w", 0.5)
 				timer.delay(0.25, false, function()
 					go.set(msg.url(nil, nil, "sprite"), "tint.w", 1)
-					self.input.space = 0
+					self.input.lshift = 0
 					self.dodging = false
 				end)
 			end
@@ -212,7 +212,7 @@ end
 ----------------------------------------------------------------------
 
 function controller.init(self)
-	self.input = { left = 0, right = 0, up = 0, down = 0, space = 0 }
+	self.input = { left = 0, right = 0, up = 0, down = 0, lshift = 0 }
 	self.velocity = vmath.vector3()
 	self.grounded = false
 	self.jump_count = 0
@@ -244,8 +244,8 @@ function controller.on_input(self, action_id, action)
 			self.input.down = -1
 		elseif action_id == h_str.key_d or action_id == h_str.gamepad_lstick_right then
 			self.input.right = 1
-		elseif action_id == h_str.key_space or action_id == h_str.gamepad_rpad_down then
-			self.input.space = 1
+		elseif action_id == h_str.key_lshift or action_id == h_str.gamepad_rpad_down then
+			self.input.lshift = 1
 		end
 	elseif action.released then
 		if action_id == h_str.key_w or action_id == h_str.gamepad_lstick_up then
@@ -256,8 +256,8 @@ function controller.on_input(self, action_id, action)
 			self.input.down = 0
 		elseif action_id == h_str.key_d or action_id == h_str.gamepad_lstick_right then
 			self.input.right = 0
-		elseif action_id == h_str.key_space or action_id == h_str.gamepad_rpad_down then
-			self.input.space = 0
+		elseif action_id == h_str.key_lshift or action_id == h_str.gamepad_rpad_down then
+			self.input.lshift = 0
 		end
 	end
 end

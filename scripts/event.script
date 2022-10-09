@@ -52,6 +52,8 @@ local function start(id)
 					end
 				end)
 			end
+		elseif error then
+			pprint(error)
 		end
 	end
 end
